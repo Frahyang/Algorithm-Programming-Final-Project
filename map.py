@@ -15,6 +15,9 @@ class Map():
         self.entitiesSpawned = 0
         self.entitiesKilled = 0
         self.entitiesMissed = 0
+        self.displayEntitiesKilled = 0
+        self.displayEntitiesMissed = 0
+
 
     def processWaypointsData(self):
         #Look through data, the json file, to get the waypoint coordinates

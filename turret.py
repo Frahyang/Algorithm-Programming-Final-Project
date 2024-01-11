@@ -29,8 +29,10 @@ class Turret(P.sprite.Sprite):
         self.frameIndex = 0
         self.updateTime = P.time.get_ticks()
 
-        #Update image 
+        #Set default image direction (Upwards)
         self.angle = 90
+    
+        #Update image 
         self.originalImage = self.animationList[self.frameIndex]
         self.image = P.transform.rotate(self.originalImage, self.angle)
         self.rect = self.image.get_rect()
@@ -44,6 +46,16 @@ class Turret(P.sprite.Sprite):
         self.rangeImage.set_alpha(100)
         self.range_rect = self.rangeImage.get_rect()
         self.range_rect.center = self.rect.center
+
+        #Create red transparent circle to distinguish selected turret
+        self.distinguishTurret = 30
+        self.distinguishTurretImage = P.Surface((self.distinguishTurret * 2, self.distinguishTurret * 2))
+        self.distinguishTurretImage.fill((0, 0, 0))
+        self.distinguishTurretImage.set_colorkey((0, 0, 0))
+        P.draw.circle(self.distinguishTurretImage, "red", (self.distinguishTurret, self.distinguishTurret), self.distinguishTurret)
+        self.distinguishTurretImage.set_alpha(100)
+        self.distinguishTurret_rect = self.distinguishTurretImage.get_rect()
+        self.distinguishTurret_rect.center = self.rect.center
 
     def loadImages(self):
         #Extract images from spritesheet
@@ -120,6 +132,15 @@ class Turret(P.sprite.Sprite):
         self.range_rect = self.rangeImage.get_rect()
         self.range_rect.center = self.rect.center
 
+        #Circle to distinguish selected turret
+        self.distinguishTurretImage = P.Surface((self.distinguishTurret * 2, self.distinguishTurret * 2))
+        self.distinguishTurretImage.fill((0, 0, 0))
+        self.distinguishTurretImage.set_colorkey((0, 0, 0))
+        P.draw.circle(self.distinguishTurretImage, "red", (self.distinguishTurret, self.distinguishTurret), self.distinguishTurret)
+        self.distinguishTurretImage.set_alpha(100)
+        self.distinguishTurret_rect = self.distinguishTurretImage.get_rect()
+        self.distinguishTurret_rect.center = self.rect.center
+
     def draw(self, surface):
         self.image = P.transform.rotate(self.originalImage, self.angle - 90)
         self.rect = self.image.get_rect()
@@ -127,22 +148,23 @@ class Turret(P.sprite.Sprite):
         surface.blit(self.image, self.rect)
         if self.selected:
             surface.blit(self.rangeImage, self.range_rect)
+            surface.blit(self.distinguishTurretImage, self.distinguishTurret_rect)
 
 def loadTurretData(self):
-        #Load turret attributes based on type
-        if self.turretType == "Basic":
-            turretData = S.BASIC_TURRET_DATA
-            self.upgradePrice = S.TURRET_UPGRADE_PRICE[0]
-            self.sellPrice = S.TURRET_SELL_PRICE[0]
-        elif self.turretType == "Sniper":
-            turretData = S.SNIPER_TURRET_DATA
-            self.upgradePrice = S.TURRET_UPGRADE_PRICE[1]
-            self.sellPrice = S.TURRET_SELL_PRICE[1]
-        elif self.turretType == "MachineGun":
-            turretData = S.MACHINEGUN_TURRET_DATA
-            self.upgradePrice = S.TURRET_UPGRADE_PRICE[2]
-            self.sellPrice = S.TURRET_SELL_PRICE[2]
-        
-        self.range = turretData[self.upgradeLevel - 1].get("range")
-        self.attackSpeed = turretData[self.upgradeLevel - 1].get("attackSpeed")
-        self.damage = turretData[self.upgradeLevel - 1].get("damage")
+    #Load turret attributes based on type
+    if self.turretType == "Basic":
+        turretData = S.BASIC_TURRET_DATA
+        self.upgradePrice = S.TURRET_UPGRADE_PRICE[0]
+        self.sellPrice = S.TURRET_SELL_PRICE[0]
+    elif self.turretType == "Sniper":
+        turretData = S.SNIPER_TURRET_DATA
+        self.upgradePrice = S.TURRET_UPGRADE_PRICE[1]
+        self.sellPrice = S.TURRET_SELL_PRICE[1]
+    elif self.turretType == "MachineGun":
+        turretData = S.MACHINEGUN_TURRET_DATA
+        self.upgradePrice = S.TURRET_UPGRADE_PRICE[2]
+        self.sellPrice = S.TURRET_SELL_PRICE[2]
+
+    self.range = turretData[self.upgradeLevel - 1].get("range")
+    self.attackSpeed = turretData[self.upgradeLevel - 1].get("attackSpeed")
+    self.damage = turretData[self.upgradeLevel - 1].get("damage")

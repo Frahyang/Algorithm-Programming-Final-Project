@@ -8,6 +8,8 @@ class Entity(P.sprite.Sprite):
     def __init__(self, entityType, waypoints, images):
         P.sprite.Sprite.__init__(self)
         self.waypoints = waypoints
+
+        #Vector2 used to represent position of entities and the movement vectors. Simplifies operations involving positions and directions in a 2D space
         self.pos = Vector2(self.waypoints[0])
         self.targetWaypoint = 1
         self.entityHealth = S.ENTITY_ATTRIBUTE_VALUES.get(entityType)["health"]
@@ -18,8 +20,9 @@ class Entity(P.sprite.Sprite):
         self.image = P.transform.rotate(self.originalEntityImage, self.angle)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        #Create health bar
-        self.healthBar = healthBar(self.pos.x - 20, self.pos.y - 30, 40, 5, self.entityHealth)
+
+        #Create health bar and set position coordinates
+        self.healthBar = HealthBar(self.pos.x - 20, self.pos.y - 30, 40, 5, self.entityHealth)
 
     def update(self, map):
         self.entityMovement(map)
@@ -32,7 +35,7 @@ class Entity(P.sprite.Sprite):
         self.healthBar.yCoordinatePosition = self.pos.y - 30
 
     def entityMovement(self, map):
-        #define a target waypoint
+        #Define a target waypoint
         if self.targetWaypoint < len(self.waypoints):
             self.target = Vector2(self.waypoints[self.targetWaypoint]) #The reason the object keeps oscillating is the distance between the object pos and the waypoint is less than the actual movement speed
             self.movement = self.target - self.pos
@@ -40,17 +43,19 @@ class Entity(P.sprite.Sprite):
             #Entities reached the end of the path
             self.kill() #Function inherited from the sprite class
             ##Total health is reduced by remaining entity health
-            map.health -= self.entityHealth
+            map.health -= min(self.entityHealth, map.health)
             map.entitiesMissed += 1
+            map.displayEntitiesMissed += 1
 
         #calculate distance to target
         entityPathDistance = self.movement.length()
+
         #Check if remaining distance is greater than the enemy speed
         if entityPathDistance >= (self.entitySpeed * map.gameSpeed):
             self.pos += self.movement.normalize() * (self.entitySpeed * map.gameSpeed)
         else:
             #The if statement below ensures that the vector will always have a length of more than 0
-            #It is necessary as for some instances the object moving 
+            #It is necessary as for some instances the object moving overshoots the remaining distance and would oscillate
             if entityPathDistance != 0:
             #This prevents the object from overshooting the remaining distance and actually reaches 0
                 self.pos += self.movement.normalize() * entityPathDistance
@@ -84,10 +89,11 @@ class Entity(P.sprite.Sprite):
     def checkEntityStatus(self, map):
         if self.entityHealth <= 0:
             map.entitiesKilled += 1
+            map.displayEntitiesKilled += 1
             map.money += self.entityKilledReward
             self.kill()
 
-class healthBar():
+class HealthBar():
     def __init__(self, xCoordinatePosition, yCoordinatePosition, width, height, maxHP):
         self.xCoordinatePosition = xCoordinatePosition
         self.yCoordinatePosition = yCoordinatePosition

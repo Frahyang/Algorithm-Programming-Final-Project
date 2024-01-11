@@ -87,7 +87,7 @@ largeUnboldedFont = P.font.SysFont("Consolas", 36, bold = False)
 #Load background music
 backgroundMusic = "audio/Background_Music.mp3"
 P.mixer.music.load(backgroundMusic)
-P.mixer.music.set_volume(0.03)
+P.mixer.music.set_volume(0.2)
 
 
 #Load turret sound effects
@@ -141,7 +141,7 @@ def createTurret(mousePosition):
 
         #If it was free noTurretOnTile becomes true
         #If the basic turret button was clicked
-        if turretList[0].selected:
+        if turretButtonList[0].selected:
             if noTurretOnTile == True:
                 newBasicTurret = T(turretSpriteSheets[0], mouseTileX, mouseTileY, turretBasicSound, turretType = "Basic")
                 turretGroup.add(newBasicTurret)
@@ -150,7 +150,7 @@ def createTurret(mousePosition):
                 map.money -= S.TURRET_PRICE[0]
 
         #If the sniper turret button was clicked
-        elif turretList[1].selected:
+        elif turretButtonList[1].selected:
             if noTurretOnTile == True:
                 newSniperTurret = T(turretSpriteSheets[1], mouseTileX, mouseTileY, turretSniperSound, turretType = "Sniper")
                 turretGroup.add(newSniperTurret)
@@ -159,7 +159,7 @@ def createTurret(mousePosition):
                 map.money -= S.TURRET_PRICE[1]
 
         #If the machine gun turret button was clicked
-        elif turretList[2].selected:
+        elif turretButtonList[2].selected:
             if noTurretOnTile == True:
                 newMachineGunTurret = T(turretSpriteSheets[2], mouseTileX, mouseTileY, turretMachineGunSound, turretType = "MachineGun")
                 turretGroup.add(newMachineGunTurret)
@@ -182,6 +182,11 @@ def clearSelectedTurret():
     for turret in turretGroup:
         turret.selected = False
 
+def reselectTurret():
+    turretButtonList[0].selected = False
+    turretButtonList[1].selected = False
+    turretButtonList[2].selected = False
+
 """Creating The Objects"""
 
 #Create the map of the level
@@ -199,7 +204,9 @@ turretGroup = P.sprite.Group()
 buyBasicTurretButton = Button(S.SCREEN_WIDTH + 30, 140, buyBasicTurretImage)
 buySniperTurretButton = Button(S.SCREEN_WIDTH + 30, 220, buySniperTurretImage)
 buyMachineGunButton = Button(S.SCREEN_WIDTH + 30, 300, buyMachineGunImage)
-turretList = [buyBasicTurretButton, buySniperTurretButton, buyMachineGunButton]
+turretButtonList = [buyBasicTurretButton, buySniperTurretButton, buyMachineGunButton]
+
+#Create turret modifier buttons
 cancelTurretButton = Button(S.SCREEN_WIDTH + 62, 380, cancelTurretImage)
 upgradeTurretButton = Button(S.SCREEN_WIDTH + 30, 460, upgradeTurretImage)
 sellTurretButton = Button(S.SCREEN_WIDTH + 62, 540, sellTurretImage)
@@ -209,7 +216,7 @@ startWaveButton = Button(S.SCREEN_WIDTH + 64, 620, startWaveImage)
 restartButton = Button(S.TOTAL_SCREEN_WIDTH // 2 - 64, S.SCREEN_HEIGHT // 2 + 16, restartImage)
 fastForwardButton = Button(S.SCREEN_WIDTH + 150, 30, fastForwardImage)
 
-"""Main Loop"""
+"""Game Loop"""
 
 #Boolean value to determine condition of game loop
 running = True
@@ -234,11 +241,11 @@ while running:
             else:
                 gameOver = True
                 gameOutcome = -1 #Lost
-        #update groups
-        entityGroup.update(map) #This is better than using a for loop, its more simplified and readable
+        #Update groups
+        entityGroup.update(map)
         turretGroup.update(entityGroup, map)
 
-        #highlight selected turret
+        #Highlight selected turret
         if selectedTurret: 
             selectedTurret.selected = True
     else:
@@ -261,7 +268,9 @@ while running:
 
     #draw groups
     for entity in entityGroup:
+        #Draw each entity
         entity.draw(screen)
+        #Draw each entity's respective health
         entity.drawHealthBar(screen)
     for turret in turretGroup:
         turret.draw(screen)
@@ -280,14 +289,20 @@ while running:
         else:
             #Fast forward option
             if fastForwardButton.draw(screen):
+
+                #If it was true it becomes false and vice versa
                 fastForwardStatus = not fastForwardStatus
+
+                #If true then increase game speed else use default speed
                 if fastForwardStatus:
                     map.gameSpeed = 2
                 else:
                     map.gameSpeed = 1
 
-            #Spawn enemies
+            #Spawn enemies | if current time subtract with last enemy spawn time is more than the rate, spawn enemy
             if P.time.get_ticks() - lastEntitySpawn > (S.ENTITY_SPAWN_RATE / map.gameSpeed):
+
+                #Continue spawning enemies if number of entities spawn is less than the current entity list
                 if map.entitiesSpawned < len(map.entityList):
                     entityType = map.entityList[map.entitiesSpawned]
                     entity = ent(entityType, map.waypoints, entityImages)
@@ -298,26 +313,32 @@ while running:
         #Check if the wave has finished
         if map.checkWaveCompletion() == True:
             map.money += S.WAVE_COMPLETED_REWARD
+
+            #Goes to the next wave
             map.wave += 1
+
+            #Prevents wave from continuing directly
             waveStarted = False
+
             lastEntitySpawn = P.time.get_ticks()
             map.continueNextWave()
             map.processEntities()
 
         #Draw buttons
         #Button for placing turrets
-        #For the "turret button" show cost of turret and draw the button
+        #For each turret show cost of turret and draw the button
         drawText(str(S.TURRET_PRICE[0]), smallBoldedFont, "grey100", S.SCREEN_WIDTH + 265, 160)
         screen.blit(coinImage, (S.SCREEN_WIDTH + 230, 155))
         drawText(str(S.TURRET_PRICE[1]), smallBoldedFont, "grey100", S.SCREEN_WIDTH + 265, 240)
         screen.blit(coinImage, (S.SCREEN_WIDTH + 230, 235))
         drawText(str(S.TURRET_PRICE[2]), smallBoldedFont, "grey100", S.SCREEN_WIDTH + 265, 320)
         screen.blit(coinImage, (S.SCREEN_WIDTH + 230, 315))
-        if turretList[0].draw(screen) or turretList[1].draw(screen) or turretList[2].draw(screen):
+        if turretButtonList[0].draw(screen) or turretButtonList[1].draw(screen) or turretButtonList[2].draw(screen):
             placingTurrets = True
+
         #If placing turrets then show the cancel button as well
         if placingTurrets:
-            if turretList[0].selected:
+            if turretButtonList[0].selected:
                 #Show basic turret on cursor
                 cursor_rect = cursorTurretImages[0].get_rect()
                 cursorPosition = P.mouse.get_pos()
@@ -326,10 +347,8 @@ while running:
                     screen.blit(cursorTurretImages[0], cursor_rect)
                 if cancelTurretButton.draw(screen):
                     placingTurrets = False
-                    turretList[0].selected = False
-                    turretList[1].selected = False
-                    turretList[2].selected = False
-            elif turretList[1].selected:
+                    reselectTurret()
+            elif turretButtonList[1].selected:
                 #Show sniper turret on cursor
                 cursor_rect = cursorTurretImages[1].get_rect()
                 cursorPosition = P.mouse.get_pos()
@@ -338,10 +357,8 @@ while running:
                     screen.blit(cursorTurretImages[1], cursor_rect)
                 if cancelTurretButton.draw(screen):
                     placingTurrets = False
-                    turretList[0].selected = False
-                    turretList[1].selected = False
-                    turretList[2].selected = False
-            elif turretList[2].selected:
+                    reselectTurret()
+            elif turretButtonList[2].selected:
                 #Show machine gun turret on cursor
                 cursor_rect = cursorTurretImages[2].get_rect()
                 cursorPosition = P.mouse.get_pos()
@@ -350,9 +367,7 @@ while running:
                     screen.blit(cursorTurretImages[2], cursor_rect)
                 if cancelTurretButton.draw(screen):
                     placingTurrets = False
-                    turretList[0].selected = False
-                    turretList[1].selected = False
-                    turretList[2].selected = False
+                    reselectTurret()
 
         #If a placed turret is selected then show the upgrade button
         if selectedTurret:
@@ -372,6 +387,8 @@ while running:
                     selectedTurret.kill()
                     map.money += selectedTurret.sellPrice
                     selectedTurret = None
+
+            #If the the turret is at max level keep the sell button displayed
             elif selectedTurret.upgradeLevel < S.TURRET_MAX_LEVEL + 1:
                 drawText(str(selectedTurret.sellPrice), smallBoldedFont, "grey100", S.SCREEN_WIDTH + 233, 561)
                 screen.blit(coinImage, (S.SCREEN_WIDTH + 198, 556))
@@ -382,9 +399,13 @@ while running:
     else:
         P.draw.rect(screen, "black", (S.TOTAL_SCREEN_WIDTH // 2 - 200, S.SCREEN_HEIGHT // 2 - 100, 400, 200), border_radius = 30)
         if gameOutcome == -1:
-            drawText("GAME OVER", largeUnboldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 90, 300)
+            drawText("GAME OVER", largeUnboldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 90, 280)
+            drawText("Entities Passed: " + str(map.displayEntitiesMissed), smallBoldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 120, 320)
+            drawText("Entities Killed: " + str(map.displayEntitiesKilled), smallBoldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 120, 340)
         elif gameOutcome == 1:
-            drawText("YOU WIN", largeUnboldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 100, 300)
+            drawText("YOU WIN", largeUnboldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 75, 280)
+            drawText("Entities Passed: " + str(map.displayEntitiesMissed), smallBoldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 120, 320)
+            drawText("Entities Killed: " + str(map.displayEntitiesKilled), smallBoldedFont, "white", S.TOTAL_SCREEN_WIDTH // 2 - 120, 340)
         #Restart wave
         if restartButton.draw(screen):
             waveStarted = False
@@ -395,6 +416,8 @@ while running:
             selectedTurret = None
             gameOver = False
             lastEntitySpawn = P.time.get_ticks()
+            map.displayEntitiesMissed = 0
+            map.displayEntitiesKilled = 0
 
             #Reset the map of the level
             map = Map(mapData, spaceMapImage)
@@ -407,10 +430,11 @@ while running:
 
     """Event Handler"""
     for event in P.event.get():
-        #quit program
+        #Quit program
         if event.type == P.QUIT:
             running = False
-        #mouse click
+
+        #Left mouse click
         if event.type == P.MOUSEBUTTONDOWN and event.button == 1: #event.button == 1 is left mouse button
             #Get the coordinates of the cursor location and pass those values into the turret
             mousePosition = P.mouse.get_pos()
@@ -421,11 +445,11 @@ while running:
                 clearSelectedTurret()
                 if placingTurrets:
                     # Check if total money is sufficient to buy turret
-                    if turretList[0].selected and map.money >= S.TURRET_PRICE[0]:
+                    if turretButtonList[0].selected and map.money >= S.TURRET_PRICE[0]:
                         createTurret(mousePosition)
-                    elif turretList[1].selected and map.money >= S.TURRET_PRICE[1]:
+                    elif turretButtonList[1].selected and map.money >= S.TURRET_PRICE[1]:
                         createTurret(mousePosition)
-                    elif turretList[2].selected and map.money >= S.TURRET_PRICE[2]:
+                    elif turretButtonList[2].selected and map.money >= S.TURRET_PRICE[2]:
                         createTurret(mousePosition)
                 else:
                     selectedTurret = selectTurret(mousePosition)
