@@ -56,5 +56,5 @@ class Map():
         self.entitiesKilled = 0
         self.entitiesMissed = 0
 
-    def draw(self, mapLocation):
-        mapLocation.blit(self.spaceMapImage, (0, 0))
+    def draw(self, surface):
+        surface.blit(self.spaceMapImage, (0, 0))
