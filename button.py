@@ -1,10 +1,10 @@
 import pygame as P
 
 class Button():
-    def __init__(self, x, y, image):
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
+    def __init__(self, xCoordinatePosition, yCoordinatePosition, buttonImage):
+        self.buttonImage = buttonImage
+        self.rect = self.buttonImage.get_rect()
+        self.rect.topleft = (xCoordinatePosition, yCoordinatePosition)
         self.buttonClicked = False
         self.selected = False
 
@@ -23,6 +23,6 @@ class Button():
         if P.mouse.get_pressed()[0] == 0:
             self.buttonClicked = False
         #Draw button on screen
-        turretPanelArea.blit(self.image, self.rect)
+        turretPanelArea.blit(self.buttonImage, self.rect)
 
         return buttonResponse

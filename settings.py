@@ -1,4 +1,6 @@
 class Settings:
+    """Screen Settings"""
+    #Screen sizing
     ROWS = 11
     COLS = 17
     TILE_SIZE = 64
@@ -6,20 +8,37 @@ class Settings:
     SCREEN_WIDTH = TILE_SIZE * COLS
     SCREEN_HEIGHT = TILE_SIZE * ROWS
     TOTAL_SCREEN_WIDTH = SCREEN_WIDTH + TURRET_PANEL
+
+    #Refresh rate
     FPS = 60
+
+    """Gameplay Settings"""
+
+    #Starting money and health of player
     TOTAL_HEALTH = 100
     TOTAL_MONEY = 600
+
+    #Total entity waves
     TOTAL_WAVES = 5
+
+    #Wave completion reward
+    WAVE_COMPLETED_REWARD = 1000
+
+    """Turret Settings"""
 
     #Turret animation constants
     ANIMATION_STEPS = 3
     ANIMATION_DELAY = 50
 
-    #Turret upgrades
+    #Max turret level
     TURRET_MAX_LEVEL = 4
+
+    #Turret modifying prices for basic, sniper, and machine gun respectively
     TURRET_PRICE = [200, 600, 3000]
     TURRET_UPGRADE_PRICE = [TURRET_PRICE[0]//2, TURRET_PRICE[1]//2, TURRET_PRICE[2]//2]
     TURRET_SELL_PRICE = [TURRET_PRICE[0]//2, TURRET_PRICE[1]//2, TURRET_PRICE[2]//2]
+
+    #Basic turret upgrades
     BASIC_TURRET_DATA = [
         {
             #Level 1
@@ -47,6 +66,7 @@ class Settings:
         },
     ]
 
+    #Sniper turret upgrades
     SNIPER_TURRET_DATA = [
         {
             #Level 1
@@ -74,6 +94,7 @@ class Settings:
         },
     ]
 
+    #Machine gun turret upgrades
     MACHINEGUN_TURRET_DATA = [
         {
             #Level 1
@@ -101,9 +122,12 @@ class Settings:
         },
     ]
 
-    #Entity data
-    ENTITY_KILLED_REWARD = 50
+    """Entity Settings"""
+
+    #How frequent each entity spawn
     ENTITY_SPAWN_RATE = 800
+
+    #Entities that will spawn on each wave
     ENTITY_SPAWN_DATA = [
         {
             #Wave 1
@@ -155,6 +179,7 @@ class Settings:
         }
     ]
 
+    #Each entity type attributes, which includes health, speed and kill reward
     ENTITY_ATTRIBUTE_VALUES = {
         "Basic": {
             "health": 10,
@@ -182,6 +207,3 @@ class Settings:
             "reward": 2000
         }
     }
-
-    #Wave completion reward
-    WAVE_COMPLETED_REWARD = 1000
