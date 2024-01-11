@@ -94,15 +94,15 @@ class Entity(P.sprite.Sprite):
             self.kill()
 
 class HealthBar():
-    def __init__(self, xCoordinatePosition, yCoordinatePosition, width, height, maxHP):
+    def __init__(self, xCoordinatePosition, yCoordinatePosition, width, height, maxHealth):
         self.xCoordinatePosition = xCoordinatePosition
         self.yCoordinatePosition = yCoordinatePosition
         self.width = width
         self.height = height
-        self.maxHP = maxHP
+        self.maxHealth = maxHealth
 
     def drawHealth(self, surface, currentHealth):
         #Calculate health ratio
-        ratio = currentHealth / self.maxHP
+        ratio = currentHealth / self.maxHealth
         P.draw.rect(surface, "red", (self.xCoordinatePosition, self.yCoordinatePosition, self.width, self.height))
         P.draw.rect(surface, "green", (self.xCoordinatePosition, self.yCoordinatePosition, self.width * ratio, self.height))
