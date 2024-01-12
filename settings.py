@@ -9,7 +9,7 @@ class Settings:
     SCREEN_HEIGHT = TILE_SIZE * ROWS
     TOTAL_SCREEN_WIDTH = SCREEN_WIDTH + TURRET_PANEL
 
-    #Refresh rate
+    #Frame rate
     FPS = 60
 
     """Gameplay Settings"""
