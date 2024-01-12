@@ -17,8 +17,8 @@ class Turret(P.sprite.Sprite):
         self.tileY = tileY
 
         #Calculate center coordinates
-        self.x = (self.tileX + 0.5) * S.TILE_SIZE
-        self.y = (self.tileY + 0.5) * S.TILE_SIZE
+        self.xCoordinatePosition = (self.tileX + 0.5) * S.TILE_SIZE
+        self.yCoordinatePosition = (self.tileY + 0.5) * S.TILE_SIZE
 
         #Shot sound effect
         self.shotFx = shotFx
@@ -36,7 +36,7 @@ class Turret(P.sprite.Sprite):
         self.originalImage = self.animationList[self.frameIndex]
         self.image = P.transform.rotate(self.originalImage, self.angle)
         self.rect = self.image.get_rect()
-        self.rect.center = (self.x, self.y)
+        self.rect.center = (self.xCoordinatePosition, self.yCoordinatePosition)
 
         #Create transparent circle showing range
         self.rangeImage = P.Surface((self.range * 2, self.range * 2))
@@ -58,6 +58,7 @@ class Turret(P.sprite.Sprite):
         self.distinguishTurret_rect.center = self.rect.center
 
     def loadImages(self):
+
         #Extract images from spritesheet
         size = self.turretTypeSpriteSheet.get_height()
         animationList = []
@@ -76,41 +77,51 @@ class Turret(P.sprite.Sprite):
                 self.pickTarget(entityGroup, map)
 
     def pickTarget(self, entityGroup, map):
-        #Find an enemy to target
+
+        #Used for pythagoral calculations
         xAxisDistance = 0
         yAxisDistance = 0
+
         #Check distance to each enemy if it is in range
         for entity in entityGroup:
-            #If statement below prevents multiple turrets from targetting the same entity when it's dead
+
+            #Check if entity health is more than 0
             if entity.entityHealth > 0:
-                xAxisDistance = entity.pos[0] - self.x
-                yAxisDistance = entity.pos[1] - self.y
+
+                #Calculate closest distance between an entity and a turret
+                xAxisDistance = entity.pos[0] - self.xCoordinatePosition
+                yAxisDistance = entity.pos[1] - self.yCoordinatePosition
                 euclideanDistance = math.sqrt(xAxisDistance ** 2 + yAxisDistance ** 2)
+
+                #Check if entity becomes in range with turret
                 if euclideanDistance < self.range:
                     self.target = entity
                     self.angle = math.degrees(math.atan2(-yAxisDistance, xAxisDistance))
-                    #Damage entity
                     self.target.entityHealth -= self.damage
                     map.money += self.damage
-                    #Play sound effect
                     self.shotFx.play()
                     break
 
     def playAnimation(self):
+
         #Update image
         self.originalImage = self.animationList[self.frameIndex]
+
         #Check if enough time has passed since the last update
         if (P.time.get_ticks() - self.updateTime) > S.ANIMATION_DELAY:
             self.updateTime = P.time.get_ticks()
             self.frameIndex += 1
+
             #Check if the animation has finished and reset to idle
             if self.frameIndex >= len(self.animationList):
                 self.frameIndex = 0
+
                 #Record completed time and clear target so attackSpeed can begin
                 self.lastShot = P.time.get_ticks()
                 self.target = None
 
     def upgradeTurret(self):
+
         #Upgrade turret based on type
         if self.turretType == "Basic":
             turretData = S.BASIC_TURRET_DATA
@@ -144,13 +155,16 @@ class Turret(P.sprite.Sprite):
     def draw(self, surface):
         self.image = P.transform.rotate(self.originalImage, self.angle - 90)
         self.rect = self.image.get_rect()
-        self.rect.center = (self.x, self.y)
+        self.rect.center = (self.xCoordinatePosition, self.yCoordinatePosition)
         surface.blit(self.image, self.rect)
+
+        #When a turret is selected show range and red circle
         if self.selected:
             surface.blit(self.rangeImage, self.range_rect)
             surface.blit(self.distinguishTurretImage, self.distinguishTurret_rect)
 
 def loadTurretData(self):
+
     #Load turret attributes based on type
     if self.turretType == "Basic":
         turretData = S.BASIC_TURRET_DATA
@@ -165,6 +179,7 @@ def loadTurretData(self):
         self.upgradePrice = S.TURRET_UPGRADE_PRICE[2]
         self.sellPrice = S.TURRET_SELL_PRICE[2]
 
+    #Load turret upgrades based on type
     self.range = turretData[self.upgradeLevel - 1].get("range")
     self.attackSpeed = turretData[self.upgradeLevel - 1].get("attackSpeed")
     self.damage = turretData[self.upgradeLevel - 1].get("damage")

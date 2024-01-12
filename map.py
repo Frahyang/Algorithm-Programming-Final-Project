@@ -20,29 +20,38 @@ class Map():
 
 
     def processWaypointsData(self):
-        #Look through data, the json file, to get the waypoint coordinates
-        for property in self.mapData["layers"]: #This will access the layers list in the json file
+
+        #Look through data of the json file, to get the waypoint coordinates
+        for property in self.mapData["layers"]:
+
+            #For tile properties of the map
             if property["name"] == "map":
                 self.tileMap = property["data"]
-            elif property["name"] == "waypoints": #To access the data from the waypoints section and not other properties
+
+            #For waypoint coordinates of the map
+            elif property["name"] == "waypoints":
                 for object in property["objects"]:
                     waypointsData = object["polyline"]
                     self.processWaypoints(waypointsData)
 
     def processWaypoints(self, waypointsData):
+
         #Iterate through waypoints to extract individual sets of x and y coordinates
-        for waypoint in waypointsData: #Converts dictionary into a 2-tuple
+        for waypoint in waypointsData:
             xCoordinateWaypoint = waypoint.get("x")
             yCoordinateWaypoint = waypoint.get("y")
             self.waypoints.append((xCoordinateWaypoint, yCoordinateWaypoint))
 
     def processEntities(self):
+
+        #Add entities of current wave to a list
         entities = S.ENTITY_SPAWN_DATA[self.wave - 1]
         for entityType in entities:
             entitiesToSpawn = entities[entityType]
             for entity in range(entitiesToSpawn):
                 self.entityList.append(entityType)
-        #Randomise list to shuffle entity spawn
+
+        #Shuffle list to randomise entity spawn
         random.shuffle(self.entityList)
 
     def checkWaveCompletion(self):
@@ -50,6 +59,7 @@ class Map():
             return True
 
     def continueNextWave(self):
+
         #Reset enemy variables
         self.entityList = []
         self.entitiesSpawned = 0

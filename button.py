@@ -10,6 +10,7 @@ class Button():
 
     def draw(self, turretPanelArea):
         buttonResponse = False
+
         #Get mouse position
         mousePosition = P.mouse.get_pos()
 
@@ -22,6 +23,7 @@ class Button():
 
         if P.mouse.get_pressed()[0] == 0:
             self.buttonClicked = False
+
         #Draw button on screen
         turretPanelArea.blit(self.buttonImage, self.rect)
 

@@ -131,11 +131,11 @@ class Settings:
     ENTITY_SPAWN_DATA = [
         {
             #Wave 1
-            "Basic": 15,
+            "Basic": 0,
             "Fast": 0,
             "Tank": 0,
             "Mini-Boss": 0,
-            "Boss": 0
+            "Boss": 1
         },
         {
             #Wave 2
