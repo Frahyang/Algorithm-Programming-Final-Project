@@ -11,9 +11,13 @@ class Entity(P.sprite.Sprite):
         #Vector2 used to represent position of entities and the movement vectors. Simplifies operations involving positions and directions in a 2D space
         self.pos = Vector2(self.waypoints[0])
         self.targetWaypoint = 1
+
+        #Initialise entity attributes
         self.entityHealth = S.ENTITY_ATTRIBUTE_VALUES.get(entityType)["health"]
         self.entitySpeed = S.ENTITY_ATTRIBUTE_VALUES.get(entityType)["speed"]
         self.entityKilledReward = S.ENTITY_ATTRIBUTE_VALUES.get(entityType)["reward"]
+
+        #Rotation necessities
         self.angle = 0
         self.originalEntityImage = images.get(entityType)
         self.entityImage = P.transform.rotate(self.originalEntityImage, self.angle)
@@ -22,16 +26,6 @@ class Entity(P.sprite.Sprite):
 
         #Create health bar and set position coordinates
         self.healthBar = HealthBar(self.pos.x - 20, self.pos.y - 30, 40, 5, self.entityHealth)
-
-    def update(self, map):
-        self.entityMovement(map)
-        self.dynamicEntityFaceDirection()
-        self.checkEntityStatus(map)
-        self.entityHealthBars()
-
-    def entityHealthBars(self):
-        self.healthBar.xCoordinatePosition = self.pos.x - 20
-        self.healthBar.yCoordinatePosition = self.pos.y - 30
 
     def entityMovement(self, map):
 
@@ -72,7 +66,7 @@ class Entity(P.sprite.Sprite):
 
         #Calculate distance to next waypoint
         entityPathDistance = self.target - self.pos
-        
+
         #Use distance to calculate angle
         self.angle = math.degrees(math.atan2(-entityPathDistance[1], entityPathDistance[0]))
 
@@ -95,6 +89,16 @@ class Entity(P.sprite.Sprite):
             map.displayEntitiesKilled += 1
             map.money += self.entityKilledReward
             self.kill()
+
+    def entityHealthBars(self):
+        self.healthBar.xCoordinatePosition = self.pos.x - 20
+        self.healthBar.yCoordinatePosition = self.pos.y - 30
+
+    def update(self, map):
+        self.entityMovement(map)
+        self.dynamicEntityFaceDirection()
+        self.checkEntityStatus(map)
+        self.entityHealthBars()
 
 class HealthBar():
     def __init__(self, xCoordinatePosition, yCoordinatePosition, width, height, maxHealth):

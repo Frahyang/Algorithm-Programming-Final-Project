@@ -3,18 +3,26 @@ from settings import Settings as S
 
 class Map():
     def __init__(self, mapData, spaceMapImage):
+
+        #Gameplay variables
         self.wave = 1
         self.gameSpeed = 1
         self.health = S.TOTAL_HEALTH
         self.money = S.TOTAL_MONEY
+
+        #Mapping
         self.tileMap = []
         self.waypoints = []
         self.mapData = mapData
         self.spaceMapImage = spaceMapImage
+
+        #Entity count handler
         self.entityList = []
         self.entitiesSpawned = 0
         self.entitiesKilled = 0
         self.entitiesMissed = 0
+
+        #Entity display counter
         self.displayEntitiesKilled = 0
         self.displayEntitiesMissed = 0
 

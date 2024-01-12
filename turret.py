@@ -7,7 +7,7 @@ class Turret(P.sprite.Sprite):
         P.sprite.Sprite.__init__(self)
         self.upgradeLevel = 1
         self.turretType = turretType
-        loadTurretData(self)
+        self.loadTurretData()
         self.lastShot = P.time.get_ticks()
         self.selected = False
         self.target = None
@@ -56,6 +56,27 @@ class Turret(P.sprite.Sprite):
         self.distinguishTurretImage.set_alpha(100)
         self.distinguishTurret_rect = self.distinguishTurretImage.get_rect()
         self.distinguishTurret_rect.center = self.rect.center
+
+    def loadTurretData(self):
+
+        #Load turret attributes based on type
+        if self.turretType == "Basic":
+            turretData = S.BASIC_TURRET_DATA
+            self.upgradePrice = S.TURRET_UPGRADE_PRICE[0]
+            self.sellPrice = S.TURRET_SELL_PRICE[0]
+        elif self.turretType == "Sniper":
+            turretData = S.SNIPER_TURRET_DATA
+            self.upgradePrice = S.TURRET_UPGRADE_PRICE[1]
+            self.sellPrice = S.TURRET_SELL_PRICE[1]
+        elif self.turretType == "MachineGun":
+            turretData = S.MACHINEGUN_TURRET_DATA
+            self.upgradePrice = S.TURRET_UPGRADE_PRICE[2]
+            self.sellPrice = S.TURRET_SELL_PRICE[2]
+
+        #Load turret upgrades based on type
+        self.range = turretData[self.upgradeLevel - 1].get("range")
+        self.attackSpeed = turretData[self.upgradeLevel - 1].get("attackSpeed")
+        self.damage = turretData[self.upgradeLevel - 1].get("damage")
 
     def loadImages(self):
 
@@ -162,24 +183,3 @@ class Turret(P.sprite.Sprite):
         if self.selected:
             surface.blit(self.rangeImage, self.range_rect)
             surface.blit(self.distinguishTurretImage, self.distinguishTurret_rect)
-
-def loadTurretData(self):
-
-    #Load turret attributes based on type
-    if self.turretType == "Basic":
-        turretData = S.BASIC_TURRET_DATA
-        self.upgradePrice = S.TURRET_UPGRADE_PRICE[0]
-        self.sellPrice = S.TURRET_SELL_PRICE[0]
-    elif self.turretType == "Sniper":
-        turretData = S.SNIPER_TURRET_DATA
-        self.upgradePrice = S.TURRET_UPGRADE_PRICE[1]
-        self.sellPrice = S.TURRET_SELL_PRICE[1]
-    elif self.turretType == "MachineGun":
-        turretData = S.MACHINEGUN_TURRET_DATA
-        self.upgradePrice = S.TURRET_UPGRADE_PRICE[2]
-        self.sellPrice = S.TURRET_SELL_PRICE[2]
-
-    #Load turret upgrades based on type
-    self.range = turretData[self.upgradeLevel - 1].get("range")
-    self.attackSpeed = turretData[self.upgradeLevel - 1].get("attackSpeed")
-    self.damage = turretData[self.upgradeLevel - 1].get("damage")
