@@ -411,11 +411,11 @@ while running:
                         selectedTurret.upgradeTurret()
                         map.money -= selectedTurret.upgradePrice
 
-                #When the sell button is clicked
-                elif sellTurretButton.draw(screen):
-                    selectedTurret.kill()
-                    map.money += selectedTurret.sellPrice
-                    selectedTurret = None
+            #When the sell button is clicked
+            if sellTurretButton.draw(screen):
+                selectedTurret.kill()
+                map.money += selectedTurret.sellPrice
+                selectedTurret = None
 
     #If player has lost
     else:

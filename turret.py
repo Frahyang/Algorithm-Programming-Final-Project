@@ -119,14 +119,11 @@ class Turret(P.sprite.Sprite):
                     self.target = entity
                     self.angle = math.degrees(math.atan2(-yAxisDistance, xAxisDistance))
                     self.target.entityHealth -= self.damage
-                    map.money += min(self.damage, self.entityHealth)
+                    map.money += min(self.damage, self.target.entityHealth)
                     self.shotFx.play()
                     break
 
     def playAnimation(self):
-
-        #Update image
-        self.originalImage = self.animationList[self.frameIndex]
 
         #Check if enough time has passed since the last update
         if (P.time.get_ticks() - self.updateTime) > S.ANIMATION_DELAY:
