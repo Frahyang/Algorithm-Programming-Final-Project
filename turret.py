@@ -31,7 +31,7 @@ class Turret(P.sprite.Sprite):
 
         #Set default image direction (Upwards)
         self.angle = 90
-    
+
         #Update image 
         self.originalImage = self.animationList[self.frameIndex]
         self.image = P.transform.rotate(self.originalImage, self.angle)
@@ -119,7 +119,7 @@ class Turret(P.sprite.Sprite):
                     self.target = entity
                     self.angle = math.degrees(math.atan2(-yAxisDistance, xAxisDistance))
                     self.target.entityHealth -= self.damage
-                    map.money += self.damage
+                    map.money += min(self.damage, self.entityHealth)
                     self.shotFx.play()
                     break
 
