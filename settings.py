@@ -1,4 +1,5 @@
 class Settings:
+
     """Screen Settings"""
     #Screen sizing
     ROWS = 11
@@ -131,11 +132,11 @@ class Settings:
     ENTITY_SPAWN_DATA = [
         {
             #Wave 1
-            "Basic": 0,
+            "Basic": 15,
             "Fast": 0,
             "Tank": 0,
             "Mini-Boss": 0,
-            "Boss": 1
+            "Boss": 0
         },
         {
             #Wave 2
